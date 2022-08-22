@@ -1,0 +1,31 @@
+`timescale 1ns / 1ps
+// Resource_optimized FIR Filter임 (5_tap FIR Filter) //
+module tb_TOP_FIR;
+reg clk, rst;
+reg [15:0] data_in;
+wire [15:0] data_out;
+
+TOP_FIR u1(
+.clk(clk),
+.rst(rst),
+.data_in(data_in),
+.data_out(data_out)
+);
+
+always begin #1 clk=~clk; end
+
+initial begin
+clk=1; rst =1; data_in=0;
+#2 rst =0; data_in =1;
+#2 rst =0; data_in =2;
+#2 rst =0; data_in =0;
+#2 rst =0; data_in =0;
+#2 rst =0; data_in =0;
+#2 rst =0; data_in =0;
+#2 rst =0; data_in =0;
+#2 rst =0; data_in =0;
+
+#20 $finish;
+
+end
+endmodule
