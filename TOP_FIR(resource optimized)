@@ -1,5 +1,5 @@
 `timescale 1ns / 1ps
-// Resource_optimized FIR Filter임 (15_tap FIR Filter) //
+// Resource_optimized FIR Filter임 (16_tap FIR Filter) //
 //////////////////////////////////////////////////////////////////////////////////
 module TOP_FIR(clk, rst, data_in, data_out);
 input clk, rst;
