@@ -1,17 +1,17 @@
 `timescale 1ns / 1ps
-// Resource_optimized FIR Filter임 (5_tap FIR Filter) //
+// Resource_optimized FIR Filter임 (15_tap FIR Filter) //
 //////////////////////////////////////////////////////////////////////////////////
 module TOP_FIR(clk, rst, data_in, data_out);
 input clk, rst;
 input [15:0] data_in;
 output [15:0] data_out;
 
-reg [15:0] xn [4:0]; // 앞의 15:0크기 배열이 5개있음
-reg [15:0] mac [2:0];
+reg [15:0] xn [15:0]; // 앞의 15:0크기 배열이 8개있음
+reg [15:0] mac [7:0];
 reg [15:0] yn;
 reg [15:0] data_out;
 
-reg [15:0] b[2:0];
+reg [15:0] b[7:0];
 
 parameter FIR_tap = 5;
 integer i;
@@ -21,7 +21,7 @@ always @ (posedge clk)
 begin
 	if(rst == 1)
 		begin
-		for(i=0; i<=2; i=i+1)
+		for(i=0; i<=7; i=i+1)
 			b[i] = 0;
 		end
 	else
@@ -29,6 +29,11 @@ begin
 			b[0] = 16'd0001;
 			b[1] = 16'd0002;
 			b[2] = 16'd0003;
+			b[3] = 16'd0004;
+			b[4] = 16'd0005;
+			b[5] = 16'd0006;
+			b[6] = 16'd0007;
+			b[7] = 16'd0008;
 		end
 end
 
@@ -37,7 +42,7 @@ always @ (posedge clk)
 begin
 	if(rst == 1)
 		begin
-			for(i=0; i<=5; i=i+1)
+			for(i=0; i<=15; i=i+1)
 					xn[i] = 0;
 		end
 	else
@@ -48,6 +53,16 @@ begin
 			xn[3] <= xn[2];
 			xn[4] <= xn[3];
 			xn[5] <= xn[4];
+			xn[6] <= xn[5];
+			xn[7] <= xn[6];
+			xn[8] <= xn[7];
+			xn[9] <= xn[8];
+			xn[10] <= xn[9];
+			xn[11] <= xn[10];
+			xn[12] <= xn[11];
+			xn[13] <= xn[12];
+			xn[14] <= xn[13];
+			xn[15] <= xn[14];
 		end
 end
 
@@ -56,14 +71,19 @@ always @ (posedge clk)
 begin
 	if(rst == 1)
 		begin
-			for(i=0; i<=2; i=i+1)
+			for(i=0; i<=7; i=i+1)
 				mac[i] = 0;
 		end
 	else
 		begin
-			mac[0] <= b[0] * (xn[0] + xn[4]);
-			mac[1] <= b[1] * (xn[1] + xn[3]);
-			mac[2] <= b[2] * xn[2];
+			mac[0] <= b[0] * (xn[0] + xn[15]);
+			mac[1] <= b[1] * (xn[1] + xn[14]);
+			mac[2] <= b[2] * (xn[2] + xn[13]);
+			mac[3] <= b[3] * (xn[3] + xn[12]);
+			mac[4] <= b[4] * (xn[4] + xn[11]);
+			mac[5] <= b[5] * (xn[5] + xn[10]);
+			mac[6] <= b[6] * (xn[6] + xn[9]);
+			mac[7] <= b[7] * (xn[7] + xn[8]);
 		end
 end
 
@@ -74,7 +94,7 @@ begin
 		yn = 0;
 	else
 		begin
-			yn <= mac[0] + mac[1] + mac[2];
+			yn <= mac[0] + mac[1] + mac[2] + mac[3]+ mac[4]+ mac[5]+ mac[6]+ mac[7];
 		end
 end
 
