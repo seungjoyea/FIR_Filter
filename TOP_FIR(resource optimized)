@@ -1,0 +1,94 @@
+`timescale 1ns / 1ps
+// Resource_optimized FIR Filter임 (5_tap FIR Filter) //
+//////////////////////////////////////////////////////////////////////////////////
+module TOP_FIR(clk, rst, data_in, data_out);
+input clk, rst;
+input [15:0] data_in;
+output [15:0] data_out;
+
+reg [15:0] xn [4:0]; // 앞의 15:0크기 배열이 5개있음
+reg [15:0] mac [2:0];
+reg [15:0] yn;
+reg [15:0] data_out;
+
+reg [15:0] b[2:0];
+
+parameter FIR_tap = 5;
+integer i;
+
+//coefficient
+always @ (posedge clk)
+begin
+	if(rst == 1)
+		begin
+		for(i=0; i<=2; i=i+1)
+			b[i] = 0;
+		end
+	else
+		begin
+			b[0] = 16'd0001;
+			b[1] = 16'd0002;
+			b[2] = 16'd0003;
+		end
+end
+
+//xn
+always @ (posedge clk)
+begin
+	if(rst == 1)
+		begin
+			for(i=0; i<=5; i=i+1)
+					xn[i] = 0;
+		end
+	else
+		begin
+			xn[0] <= data_in;
+			xn[1] <= xn[0];
+			xn[2] <= xn[1];
+			xn[3] <= xn[2];
+			xn[4] <= xn[3];
+			xn[5] <= xn[4];
+		end
+end
+
+//mac
+always @ (posedge clk)
+begin
+	if(rst == 1)
+		begin
+			for(i=0; i<=2; i=i+1)
+				mac[i] = 0;
+		end
+	else
+		begin
+			mac[0] <= b[0] * (xn[0] + xn[4]);
+			mac[1] <= b[1] * (xn[1] + xn[3]);
+			mac[2] <= b[2] * xn[2];
+		end
+end
+
+//yn
+always @ (posedge clk)
+begin
+	if(rst == 1)
+		yn = 0;
+	else
+		begin
+			yn <= mac[0] + mac[1] + mac[2];
+		end
+end
+
+//data_out
+always @ (posedge clk)
+begin
+	if(rst == 1)
+		begin
+			data_out[15:0] = 0;
+		end
+	else
+		begin
+			data_out <= yn[15:0];
+		end
+end
+
+endmodule
